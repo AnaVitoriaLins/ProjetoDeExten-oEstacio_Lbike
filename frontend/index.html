@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LBike - Painel de Controle</title>
+    <link rel="stylesheet" href="styles.css"> 
+    
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <a href="index.html">
+            <img src="./logo.png" alt="imgLogo"></a>
+        </div>
+        <nav class="navbar">
+            <ul>
+                <li><a href="itens.html">Estoque</a></li>
+                <li><a href="funcionarios.html">Funcionários</a></li>
+                <li><a href="agendamentos.html">Agendamentos</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="carrossel">
+        <div class="carrossel-images">
+            <img src="./frente-loja.png" alt="Imagem 1">
+            <img src="./frente-loja2.png" alt="Imagem 3">
+            <img src="./revisao-bike-roda.jpg" alt="Imagem 2">
+        </div>
+        <button class="prev" onclick="moveSlide(-1)">&#10094;</button>
+        <button class="next" onclick="moveSlide(1)">&#10095;</button>
+    </div>
+
+    <main class="geral">
+        <h2>Visão Geral</h2>
+        <p>Utilize o menu acima para acessar as funcionalidades do sistema.</p>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 LBike. Todos os direitos reservados.</p>
+    </footer>
+    
+    <script src="scripts.js"></script>
+</body>
+</html>

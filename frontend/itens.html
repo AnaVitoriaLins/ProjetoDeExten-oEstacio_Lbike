@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Itens - LBike</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <a href="index.html">
+                <img src="./logo.png" alt="imgLogo"></a>
+        </div>
+        <nav class="navbar">
+            <ul>
+                <li><a href="funcionarios.html">Funcionários</a></li>
+                <li><a href="agendamentos.html">Agendamentos</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <button id="toggleFormButton">Criar Item</button>
+        <div id="formContainer" style="display: none;">
+            <h2>Criar Item</h2>
+            <form id="itemForm">
+                <input type="text" name="nome" placeholder="Nome do Item" required>
+                <input type="text" name="tipo" placeholder="Tipo" required>
+                <input type="text" name="marca" placeholder="Marca" required>
+                <input type="number" name="quantidade" placeholder="Quantidade" required>
+                <input type="number" name="valor_unitario" placeholder="Valor Unitário" required>
+                <button type="submit">Criar Item</button>
+            </form>
+        </div>
+
+        <h2>Lista de Itens</h2>
+        <ul id="itList">
+            <li class="list-header">
+                <span>Nome</span>
+                <span>Tipo</span>
+                <span>Marca</span>
+                <span>Quantidade</span>
+                <span>Valor Unitário</span>
+                <span>Valor Total</span>
+            </li>
+            <ul id="itemList"></ul>
+        </ul>
+    </main>
+
+    <main class="geral">
+        <p>Para retornar a pagina principal clique na logo.</p>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 LBike. Todos os direitos reservados.</p>
+    </footer>
+
+
+    
+    <script src="scripts.js"></script>
+    <script>
+
+        // Função para carregar Itens
+        async function loadItems() {
+            const itemList = document.getElementById('itemList');
+            if (itemList) {
+                itemList.innerHTML = ''; // Limpa a lista antes de carregar
+        
+                try {
+                    const items = await getAllResources('itens');
+                    items.forEach(item => {
+                        const li = document.createElement('li');
+                        li.classList.add('list-item');
+                        li.innerHTML = `
+                            <span>${item.nome}</span>
+                            <span>${item.tipo}</span>
+                            <span>${item.marca}</span>
+                            <span>${item.quantidade}</span>
+                            <span>R$${item.valor_unitario}</span>
+                            <span>R$${item.valor_total}</span>
+                        `;
+                        itemList.appendChild(li);
+                    });
+                } catch (error) {
+                    alert(error.message);
+                }
+            }
+        }
+
+        // Inicializa os eventos ao carregar a página
+        function initEvents() {
+            const itemForm = document.getElementById('itemForm');
+            if (itemForm) {
+                itemForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const formData = new FormData(itemForm);
+                    const data = Object.fromEntries(formData.entries());
+
+                    try {
+                        await createResource('itens', data);
+                        itemForm.reset();
+                        loadItems();
+                    } catch (error) {
+                        alert(error.message);
+                    }
+                });
+                loadItems();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggleFormButton = document.getElementById('toggleFormButton');
+            const formContainer = document.getElementById('formContainer');
+
+            toggleFormButton.addEventListener('click', () => {
+                if (formContainer.style.display === 'none' || formContainer.style.display === '') {
+                    formContainer.style.display = 'block';
+                    toggleFormButton.textContent = 'Cancelar';
+                } else {
+                    formContainer.style.display = 'none';
+                    toggleFormButton.textContent = 'Criar Item';
+                }
+            });
+
+            initEvents();
+        });
+    </script>
+</body>
+</html>

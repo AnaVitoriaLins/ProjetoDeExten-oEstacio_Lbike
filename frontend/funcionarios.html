@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Funcionários - LBike</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <a href="index.html">
+                <img src="./logo.png" alt="imgLogo"></a>
+        </div>
+        <nav class="navbar">
+            <ul>
+                <li><a href="itens.html">Estoque</a></li>
+                <li><a href="agendamentos.html">Agendamentos</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <button id="toggleFormButton">Criar Funcionário</button>
+        <div id="formContainer" style="display: none;">
+            <h2>Criar Funcionário</h2>
+            <form id="funcionarioForm">
+                <input type="text" name="nome" placeholder="Nome" required>
+                <input type="text" name="cpf" placeholder="CPF" required>
+                <input type="text" name="telefone" placeholder="Telefone" required>
+                <input type="text" name="endereco" placeholder="Endereço" required>
+                <input type="number" name="dias_trabalhados" placeholder="Dias Trabalhados" required>
+                <input type="number" name="valor_pago" placeholder="Valor Pago" required>
+                <button type="submit">Criar Funcionário</button>
+            </form>
+        </div>
+
+        <h2>Lista de Funcionários</h2>
+        <ul id="funcList">
+            <li class="list-header">
+                <span>Nome</span>
+                <span>CPF</span>
+                <span>Telefone</span>
+                <span>Endereço</span>
+                <span>Dias Trabalhados</span>
+                <span>Valor Pago</span>
+            </li>
+            <ul id="funcionarioList"></ul>        
+
+            </ul>
+    </main>
+
+    <main class="geral">
+        <p>Para retornar a pagina principal clique na logo.</p>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 LBike. Todos os direitos reservados.</p>
+    </footer>
+
+
+    <script src="scripts.js"></script>
+    <script>
+
+        // Função para carregar Funcionários
+        async function loadFuncionarios() {
+            const funcionarioList = document.getElementById('funcionarioList');
+            if(funcionarioList){
+            funcionarioList.innerHTML = ''; // Limpa a lista antes de carregar
+            
+            try {
+                const funcionarios = await getAllResources('funcionarios');
+                funcionarios.forEach(item => {
+                    const li = document.createElement('li');
+                    li.classList.add('list-item');
+
+                    li.innerHTML = `
+                        <span>${item.nome}</span>
+                        <span>${item.cpf}</span>
+                        <span>${item.telefone}</span>
+                        <span>${item.endereco}</span>
+                        <span>${item.dias_trabalhados}</span>
+                        <span>R$${item.valor_pago}</span>
+                    `;
+                    funcionarioList.appendChild(li);
+                });
+            } catch (error) {
+                alert(error.message);
+            } 
+        }
+    }
+
+        // Inicializa os eventos ao carregar a página
+        function initEvents() {
+            const funcionarioForm = document.getElementById('funcionarioForm');
+            if (funcionarioForm) {
+                funcionarioForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const formData = new FormData(funcionarioForm);
+                    const data = Object.fromEntries(formData.entries());
+
+                    try {
+                        await createResource('funcionarios', data);
+                        funcionarioForm.reset();
+                        loadFuncionarios();
+                    } catch (error) {
+                        alert(error.message);
+                    }
+                });
+                loadFuncionarios();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggleFormButton = document.getElementById('toggleFormButton');
+            const formContainer = document.getElementById('formContainer');
+
+            toggleFormButton.addEventListener('click', () => {
+                if (formContainer.style.display === 'none' || formContainer.style.display === '') {
+                    formContainer.style.display = 'block';
+                    toggleFormButton.textContent = 'Cancelar';
+                } else {
+                    formContainer.style.display = 'none';
+                    toggleFormButton.textContent = 'Criar Funcionário';
+                }
+            });
+
+            initEvents();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+projeto Lbike para gestão de estoque/funcionario e agendamentos de uma oficina de bicicleta, feito em acompanhamento de acordo com  necessidades reportada pelo dono da oficina
+
+Antes de testas troque a senha do banco de dados em .env
+no terminal coloque node app.js para iniciar o servidor e em seguida abra a pagina do front end para testar
