@@ -268,3 +268,20 @@ footer {
 .delete-button:hover {
     background-color: #d32f2f;
 }
+
+#toggleFormButton {
+    display: block;
+    margin-left: auto; /* Empurra o botão para a direita */
+    margin-right: 10px; /* Dá um espaçamento do lado direito */
+    margin-top: 10px; /* Espaçamento superior opcional */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#toggleFormButton:hover {
+    background-color: #b8a4d4; /* Cor ao passar o mouse */
+    color: #333;
+}
