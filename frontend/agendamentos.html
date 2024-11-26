@@ -90,24 +90,36 @@ async function loadAgendamentos() {
 
         try {
             const agendamentos = await getAllResources('agendamentos');
-            agendamentos.forEach(item => {
+            agendamentos.forEach(agendamento => {
                 const li = document.createElement('li');
-                li.classList.add('list-item'); // Adiciona uma classe para estilo
-
+                li.classList.add('list-item');
                 li.innerHTML = `
-                    <span>${item.cliente_nome}</span>
-                    <span>${item.cliente_telefone}</span>
-                    <span>${item.cliente_endereco}</span>
-                    <span>${item.servico}</span>
-                    <span>${item.data_hora}</span>
+                    <span>${agendamento.cliente_nome}</span>
+                    <span>${agendamento.cliente_telefone}</span>
+                    <span>${agendamento.cliente_endereco}</span>
+                    <span>${agendamento.servico}</span>
+                    <span>${agendamento.data_hora}</span>
+                    <button class="edit-button" data-id="${agendamento.id}">Editar</button>
+                    <button class="delete-button" data-id="${agendamento.id}">Excluir</button>
                 `;
                 agendamentoList.appendChild(li);
             });
+
+            // Adiciona eventos aos botões
+            document.querySelectorAll('.edit-button').forEach(button => {
+                button.addEventListener('click', handleEditAgendamento);
+            });
+
+            document.querySelectorAll('.delete-button').forEach(button => {
+                button.addEventListener('click', handleDeleteAgendamento);
+            });
+
         } catch (error) {
             alert(error.message);
         }
     }
 }
+
 
 // Inicializa os eventos ao carregar a página
 window.onload = initEvents;
@@ -126,6 +138,58 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+// Função para editar um agendamento
+async function handleEditAgendamento(event) {
+    const agendamentoId = event.target.dataset.id;
+    const newValues = promptEditAgendamentoValues(); // Prompt customizado para novos valores
+
+    if (newValues) {
+        try {
+            await fetch(`${API_BASE_URL}/agendamentos/${agendamentoId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newValues),
+            });
+            alert('Agendamento atualizado com sucesso!');
+            loadAgendamentos(); // Recarrega a lista de agendamentos
+        } catch (error) {
+            alert('Erro ao editar o agendamento.');
+        }
+    }
+}
+
+// Função para prompt de novos valores
+function promptEditAgendamentoValues() {
+    const cliente_nome = prompt('Novo nome do cliente:');
+    const cliente_telefone = prompt('Novo telefone:');
+    const cliente_endereco = prompt('Novo endereço:');
+    const servico = prompt('Novo serviço:');
+    const data_hora = prompt('Nova data e hora:');
+
+    if (cliente_nome && cliente_telefone && cliente_endereco && servico && data_hora) {
+        return { cliente_nome, cliente_telefone, cliente_endereco, servico, data_hora };
+    }
+    alert('Preencha todos os campos.');
+    return null;
+}
+
+// Função para excluir um agendamento
+async function handleDeleteAgendamento(event) {
+    const agendamentoId = event.target.dataset.id;
+
+    if (confirm('Tem certeza de que deseja excluir este agendamento?')) {
+        try {
+            await fetch(`${API_BASE_URL}/agendamentos/${agendamentoId}`, { method: 'DELETE' });
+            alert('Agendamento excluído com sucesso!');
+            loadAgendamentos(); // Recarrega a lista de agendamentos
+        } catch (error) {
+            alert('Erro ao excluir o agendamento.');
+        }
+    }
+}
+
+
     </script>
 </body>
 </html>

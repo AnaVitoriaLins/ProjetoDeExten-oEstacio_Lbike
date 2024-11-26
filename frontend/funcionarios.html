@@ -64,31 +64,43 @@
 
         // Função para carregar Funcionários
         async function loadFuncionarios() {
-            const funcionarioList = document.getElementById('funcionarioList');
-            if(funcionarioList){
-            funcionarioList.innerHTML = ''; // Limpa a lista antes de carregar
-            
-            try {
-                const funcionarios = await getAllResources('funcionarios');
-                funcionarios.forEach(item => {
-                    const li = document.createElement('li');
-                    li.classList.add('list-item');
+    const funcionarioList = document.getElementById('funcionarioList');
+    if (funcionarioList) {
+        funcionarioList.innerHTML = ''; // Limpa a lista antes de carregar
 
-                    li.innerHTML = `
-                        <span>${item.nome}</span>
-                        <span>${item.cpf}</span>
-                        <span>${item.telefone}</span>
-                        <span>${item.endereco}</span>
-                        <span>${item.dias_trabalhados}</span>
-                        <span>R$${item.valor_pago}</span>
-                    `;
-                    funcionarioList.appendChild(li);
-                });
-            } catch (error) {
-                alert(error.message);
-            } 
+        try {
+            const funcionarios = await getAllResources('funcionarios');
+            funcionarios.forEach(funcionario => {
+                const li = document.createElement('li');
+                li.classList.add('list-item');
+                li.innerHTML = `
+                    <span>${funcionario.nome}</span>
+                    <span>${funcionario.cpf}</span>
+                    <span>${funcionario.telefone}</span>
+                    <span>${funcionario.endereco}</span>
+                    <span>${funcionario.dias_trabalhados}</span>
+                    <span>R$${funcionario.valor_pago.toFixed(2)}</span>
+                    <button class="edit-button" data-id="${funcionario.id}">Editar</button>
+                    <button class="delete-button" data-id="${funcionario.id}">Excluir</button>
+                `;
+                funcionarioList.appendChild(li);
+            });
+
+            // Adiciona eventos aos botões
+            document.querySelectorAll('.edit-button').forEach(button => {
+                button.addEventListener('click', handleEditFuncionario);
+            });
+
+            document.querySelectorAll('.delete-button').forEach(button => {
+                button.addEventListener('click', handleDeleteFuncionario);
+            });
+
+        } catch (error) {
+            alert(error.message);
         }
     }
+}
+
 
         // Inicializa os eventos ao carregar a página
         function initEvents() {
@@ -127,6 +139,57 @@
 
             initEvents();
         });
+
+        // Função para editar um funcionário
+async function handleEditFuncionario(event) {
+    const funcionarioId = event.target.dataset.id;
+    const newValues = promptEditFuncionarioValues(); // Prompt customizado para novos valores
+
+    if (newValues) {
+        try {
+            await fetch(`${API_BASE_URL}/funcionarios/${funcionarioId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newValues),
+            });
+            alert('Funcionário atualizado com sucesso!');
+            loadFuncionarios(); // Recarrega a lista de funcionários
+        } catch (error) {
+            alert('Erro ao editar o funcionário.');
+        }
+    }
+}
+
+// Função para prompt de novos valores
+function promptEditFuncionarioValues() {
+    const nome = prompt('Novo nome:');
+    const telefone = prompt('Novo telefone:');
+    const endereco = prompt('Novo endereço:');
+    const dias_trabalhados = prompt('Dias trabalhados:');
+    const valor_pago = prompt('Valor pago:');
+
+    if (nome && telefone && endereco && dias_trabalhados && valor_pago) {
+        return { nome, telefone, endereco, dias_trabalhados: Number(dias_trabalhados), valor_pago: Number(valor_pago) };
+    }
+    alert('Preencha todos os campos.');
+    return null;
+}
+
+// Função para excluir um funcionário
+async function handleDeleteFuncionario(event) {
+    const funcionarioId = event.target.dataset.id;
+
+    if (confirm('Tem certeza de que deseja excluir este funcionário?')) {
+        try {
+            await fetch(`${API_BASE_URL}/funcionarios/${funcionarioId}`, { method: 'DELETE' });
+            alert('Funcionário excluído com sucesso!');
+            loadFuncionarios(); // Recarrega a lista de funcionários
+        } catch (error) {
+            alert('Erro ao excluir o funcionário.');
+        }
+    }
+}
+
     </script>
 </body>
 </html>
